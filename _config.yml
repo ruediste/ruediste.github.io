@@ -19,7 +19,8 @@ description: >
   Blog about various subjects on programming, often Java related
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
-github_username:  ruediste
+github_username: ruediste
+google_analytics: UA-92460241-1
 
 # Build settings
 markdown: kramdown
