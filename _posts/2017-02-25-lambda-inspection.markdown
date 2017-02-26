@@ -81,7 +81,7 @@ public class LambdaInspectorAgent {
             e.printStackTrace();
         }
     }
-		...
+    ...
 ```
 
 We see how the transformer is registered and the `InnerClassLambdaMetafactory` is retransformed. This gives our transformer a chance to change the metafactory. The agent is loaded simply by calling
@@ -99,7 +99,7 @@ private static final class InnerClassLambdaMetafactoryTransformer implements Cla
   public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
           ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
       if (className.equals("java/lang/invoke/InnerClassLambdaMetafactory")) {
-				...
+        ...
 ```
 
 This part makes sure only the `InnerClassLambdaMetafactory` is beeing transformed. Then we fire up a `ClassVisitor` with a special `MethodVisitor`
@@ -117,9 +117,9 @@ ClassReader cr = new ClassReader(classfileBuffer);
               public void visitMethodInsn(int opcode, String owner, String name, String desc,
                       boolean itf) {
                   super.visitMethodInsn(opcode, owner, name, desc, itf);
-									if ("jdk/internal/org/objectweb/asm/ClassWriter".equals(owner)
-																			 && "visit".equals(name)) {
-									  ...
+                  if ("jdk/internal/org/objectweb/asm/ClassWriter".equals(owner)
+                                       && "visit".equals(name)) {
+                    ...
 ```
 The `MethodVisitor` does nothing except in the case it visits the invocation of `ClassWriter.visit()`. This is the spot the metafactory starts emitting the proxy class and we can patch it to add the desired `LambdaInformation` annotation:
 
@@ -127,25 +127,25 @@ The `MethodVisitor` does nothing except in the case it visits the invocation of 
 // get ClassWriter
 mv.visitVarInsn(Opcodes.ALOAD, 0);
 mv.visitFieldInsn(Opcodes.GETFIELD, "java/lang/invoke/InnerClassLambdaMetafactory",
-		"cw", "Ljdk/internal/org/objectweb/asm/ClassWriter;");
+    "cw", "Ljdk/internal/org/objectweb/asm/ClassWriter;");
 
 // visitAnnotation()
 mv.visitLdcInsn("Lcom/github/ruediste/lambdaInspector/LambdaInformation;");
 mv.visitInsn(Opcodes.ICONST_1);
 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
-		"jdk/internal/org/objectweb/asm/ClassWriter", "visitAnnotation",
-		"(Ljava/lang/String;Z)Ljdk/internal/org/objectweb/asm/AnnotationVisitor;",
-		false);
+    "jdk/internal/org/objectweb/asm/ClassWriter", "visitAnnotation",
+    "(Ljava/lang/String;Z)Ljdk/internal/org/objectweb/asm/AnnotationVisitor;",
+    false);
 
 // impl method name
 mv.visitInsn(Opcodes.DUP);
 mv.visitLdcInsn("implMethodName");
 mv.visitVarInsn(Opcodes.ALOAD, 0);
 mv.visitFieldInsn(Opcodes.GETFIELD, "java/lang/invoke/InnerClassLambdaMetafactory",
-		"implMethodName", "Ljava/lang/String;");
+    "implMethodName", "Ljava/lang/String;");
 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
-		"jdk/internal/org/objectweb/asm/AnnotationVisitor", "visit",
-		"(Ljava/lang/String;Ljava/lang/Object;)V", false);
+    "jdk/internal/org/objectweb/asm/AnnotationVisitor", "visit",
+    "(Ljava/lang/String;Ljava/lang/Object;)V", false);
 ...
 ```
 We first get a hold on the class writer, then start an annotation and then extract each piece of information we are interested in from the instance variables of the metafactory and place in in the annotation.
@@ -155,17 +155,17 @@ Remains a test to confirm it all works:
 ``` java
 @Test
 public void testInspector() throws Exception {
-	LambdaInspector.setup();
-	Runnable run = () -> {
-	};
-	LambdaInformation info = run.getClass().getAnnotation(LambdaInformation.class);
-	assertEquals(LambdaInspectorTest.class, info.implMethodClass());
-	assertEquals("lambda$0", info.implMethodName());
-	assertEquals("()V", info.implMethodDesc());
-	assertEquals(Runnable.class, info.samClass());
-	assertEquals("run", info.samMethodName());
-	assertEquals("()V", info.samMethodDesc());
+  LambdaInspector.setup();
+  Runnable run = () -> {
+  };
+  LambdaInformation info = run.getClass().getAnnotation(LambdaInformation.class);
+  assertEquals(LambdaInspectorTest.class, info.implMethodClass());
+  assertEquals("lambda$0", info.implMethodName());
+  assertEquals("()V", info.implMethodDesc());
+  assertEquals(Runnable.class, info.samClass());
+  assertEquals("run", info.samMethodName());
+  assertEquals("()V", info.samMethodDesc());
 }
 ```
 
-The full code example can be found on [github](https://github.com/ruediste/lambda-inspector). Stay tuned for a follow up on how to get information out of this implementation method.
+The full code example can be found on [github](https://github.com/ruediste/lambda-inspector). Stay tuned for a follow up on how to get information out of the implementation methods.
