@@ -16,7 +16,7 @@
 title: Ruedi's Blog
 email: ruediste@gmail.com
 description: >
-  Blog about various subjects on programming, often Java related
+  Blog on various programming subjects, often Java related
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username: ruediste
