@@ -11,7 +11,7 @@ There are several ways to access private fields of a class: The first that comes
 
 So, let's build a sample setter for the following class:
 
-```
+``` java
 public class Sample {
     private String message;
     public String getMessage() {
@@ -22,7 +22,7 @@ public class Sample {
 
 First we define an interface for the setter:
 
-```
+``` java
 public interface SampleSetter {
     void setMessage(Sample sample, String message);
 }
@@ -30,7 +30,7 @@ public interface SampleSetter {
 
 As we don't want to write the whole bytecode of the setter class, we'll make the field temporarily public and implement the setter class in plain old Java:
 
-```
+``` java
 public class SampleSetterImpl implements SampleSetter {
     public void setMessage(Sample sample, String message) {
          sample.message = message;
@@ -40,7 +40,7 @@ public class SampleSetterImpl implements SampleSetter {
 
 We'll use [ASM](http://asm.ow2.org/index.html) to do the bytecode generation. Using the excellent [ASM Bytecode Eclipse Plugin](http://asm.ow2.org/eclipse/index.html) we can directly retrieve the code needed to generate the setter implementation. Just open the `Bytecode` view in Eclipse, switch it to ASM mode (icon in the top right of the view) and copy past the code:
 
-```
+``` java
 public static byte[] dump() throws Exception {
 
 	ClassWriter cw = new ClassWriter(0);
@@ -80,7 +80,7 @@ We see the class implementing the setter interface. The first method is the cons
 
 So the remaining task is to load the class:
 
-```
+``` java
 public class AccessorGenerator {
     public static SampleSetter generate() {
 	    Class<?> accessor = getUnsafe().defineAnonymousClass(Sample.class, dump(), null);
@@ -91,7 +91,7 @@ public class AccessorGenerator {
 
 So far, so simple, but what does `getUnsafe()` do? Since `sun.misc.Unsafe` is not part of the JRE Api there is intentionally no direct way to get an instance of it. One has to use reflection to get the static `theUnsafe` field of the class:
 
-```
+``` java
 @SuppressWarnings("restriction")
 private sun.misc.Unsafe getUnsafe() {
     try {
@@ -106,7 +106,7 @@ private sun.misc.Unsafe getUnsafe() {
 
 Well, looks all good, right? But we miss a little test to show it all works out:
 
-```
+``` java
 @Test
 public void test() {
     Sample sample = new Sample();

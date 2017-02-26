@@ -7,7 +7,7 @@ categories: cloud
 
 I had access control issues with the private docker registry provided by the google cloud, so I decided to roll my own on kubernetes. The deployment of the registry itself is straight forward:
 
-```
+``` yaml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -36,7 +36,7 @@ spec:
 
 This makes the registry available from within the pods of the cluster. But the docker daemons of the cluster nodes have to be able to access the registry. Using a daemon set allows to deploy one pod on every node of the cluster (one pod per node). The pod we are deploying opens a host port and forwards to the single instance of the registry:
 
-```
+``` yaml
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
