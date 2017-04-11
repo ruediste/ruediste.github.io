@@ -18,7 +18,7 @@ email: ruediste@gmail.com
 description: >
   Blog on various programming subjects, often Java related
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://ruediste.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username: ruediste
 google_analytics: UA-92460241-1
 disqus:
