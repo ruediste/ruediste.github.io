@@ -2,7 +2,7 @@
 layout: post
 title:  "Serializing Non-Serializable Lambdas"
 date:   2017-05-07 +0100
-categories: java, kryo
+categories: [java, kryo]
 ---
 Standard Java serializiation of lambda expressions isn't straight forward, but well understood. But the mechanism only works if the functional interface implements `Serializable`. When using alternative serialization libraries such as [Kryo](https://github.com/EsotericSoftware/kryo), there is typically no need to inherit from `Serializable`. Unfortunately I haven't seen a solution yet to apply the same principle to lambdas.
 
