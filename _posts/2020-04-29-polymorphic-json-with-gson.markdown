@@ -188,4 +188,4 @@ public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
 }
 ```
 
-And that's basically it. Full source code can be found on [github](https://github.com/ruediste/blog-samples/tree/master/src/main/java/com/github/ruediste/blogSamples/gsonPolymorphism).
+And that's basically it. Full source code can be found on [github](https://github.com/ruediste/polymorphic-gson), package is published to maven central.
