@@ -1,0 +1,6 @@
+{
+    "sketch": "../els/els.ino",
+    "board": "arduino:avr:nano",
+    "programmer": "Arduino as ISP",
+    "configuration": "cpu=atmega328old"
+}
